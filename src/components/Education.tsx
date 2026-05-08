@@ -59,7 +59,6 @@ const educationData: EducationItem[] = [
     period: '2021.09 – 2025.06',
     icon: 'https://upload.wikimedia.org/wikipedia/zh/thumb/4/4c/National_Taiwan_University_logo.svg/1280px-National_Taiwan_University_logo.svg.png',
     gpa: '4.01',
-    rank: '47/123',
   },
 ]
 

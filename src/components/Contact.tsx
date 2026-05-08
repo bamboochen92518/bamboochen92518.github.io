@@ -39,7 +39,6 @@ const useStyles = makeStyles({
 const links = [
   { label: 'GitHub', href: 'https://github.com/bamboochen92518' },
   { label: 'LinkedIn', href: 'https://www.linkedin.com/in/chu-hsin-chen-1194412a0/' },
-  { label: 'Twitter', href: 'https://x.com/bamboochen92518' },
 ]
 
 export default function Contact() {

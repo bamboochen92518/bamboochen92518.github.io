@@ -99,9 +99,33 @@ const useStyles = makeStyles({
     marginBottom: 14,
   },
   filterGrid: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 12,
+  },
+  filterCategory: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 8,
+  },
+  filterCategoryHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 6,
+    cursor: 'pointer',
+    userSelect: 'none' as const,
+  },
+  filterCategoryTitle: {
+    fontWeight: 500,
+    color: '#7a6f65',
+    fontSize: '0.85em',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  filterCategoryItems: {
     display: 'grid',
     gridTemplateColumns: 'repeat(2, minmax(140px, 1fr))',
-    gap: '10px 16px',
+    gap: '8px 16px',
   },
   filterMenuItem: {
     display: 'flex',
@@ -178,6 +202,17 @@ interface ProjectItem {
 
 const projectsData: ProjectItem[] = [
   {
+    name: 'Multilabel Classification in Medical Images',
+    description: 'A research project focusing on multilabel classification for medical images. Designed resampling and grouping methods to address data imbalance.',
+    tags: ['Python', 'Computer Vision', 'Multilabel Classification', 'Deep Learning', 'Medical Imaging'],
+  },
+  {
+    name: 'Free NTU of Bicycles',
+    description: 'A computer vision project for object removal in videos. Applied SegFormer for semantic segmentation and VGGT for 3D scene reconstruction, with depth-aware inpainting via DiffuEraser.',
+    tags: ['Python', 'Computer Vision', 'Diffusion Models', 'Embodied Vision'],
+    link: "https://github.com/bamboochen92518/Free-NTU-of-Bicycles-ver2",
+  },
+  {
     name: 'Audit Competition Report',
     description: 'A smart contract auditing project focused on logical error detection and risk assessment.',
     tags: ['Solidity', 'Foundry', 'Blockchain'],
@@ -196,21 +231,10 @@ const projectsData: ProjectItem[] = [
     link: "https://github.com/bamboochen92518/ADL-FINAL",
   },
   {
-    name: 'Free NTU of Bicycles',
-    description: 'A computer vision project for object removal in videos. Applied SegFormer for semantic segmentation and VGGT for 3D scene reconstruction, with depth-aware inpainting via DiffuEraser.',
-    tags: ['Python', 'Computer Vision', 'Diffusion Models', 'Embodied Vision'],
-    link: "https://github.com/bamboochen92518/Free-NTU-of-Bicycles-ver2",
-  },
-  {
     name: 'Automated Trading Strategy Generator',
     description: 'An AI-agent-based system that automatically generates trading strategies (alpha) by integrating LLMs to retrieve and synthesize research from arXiv. Automated data fetching, backtesting, and strategy code generation.',
     tags: ['Python', 'LLM', 'AI Agent', 'Quantitative Finance'],
     link: "https://github.com/MimiChen1123/GenAI-Hackathon",
-  },
-  {
-    name: 'Multilabel Classification in Medical Images',
-    description: 'A research project focusing on multilabel classification for medical images. Designed resampling and grouping methods to address data imbalance.',
-    tags: ['Python', 'Computer Vision', 'Multilabel Classification', 'Deep Learning', 'Medical Imaging'],
   },
   {
     name: 'Arbitrage UI',
@@ -220,7 +244,13 @@ const projectsData: ProjectItem[] = [
   },
 ]
 
-projectsData.sort((a, b) => a.name.localeCompare(b.name))
+
+const tagCategories = {
+  'Machine Learning': ['AI Agent', 'Computer Vision', 'Deep Learning', 'Diffusion Models', 'Embodied Vision', 'LLM', 'Machine Learning', 'Medical Imaging', 'Multilabel Classification', 'NLP', 'Random Forest', 'RNN'],
+  'Blockchain': ['Blockchain', 'Foundry', 'Solidity'],
+  'Frontend': ['TypeScript', 'Vite'],
+  'Other': ['Python', 'Quantitative Finance'],
+}
 
 const allTags = Array.from(new Set(projectsData.flatMap(p => p.tags))).sort()
 
@@ -278,16 +308,49 @@ export default function Projects() {
                     />
                     All
                   </label>
-                  {allTags.map(tag => (
-                    <label key={tag} className={classes.filterMenuItem}>
-                      <input
-                        type="checkbox"
-                        checked={selectedTags.has(tag)}
-                        onChange={() => toggleTag(tag)}
-                      />
-                      {tag}
-                    </label>
-                  ))}
+                  {Object.entries(tagCategories).map(([category, tags]) => {
+                    const categorySelectedCount = tags.filter(tag => selectedTags.has(tag)).length
+                    const isCategoryFullySelected = categorySelectedCount === tags.length
+                    const isCategoryPartiallySelected = categorySelectedCount > 0 && categorySelectedCount < tags.length
+
+                    const toggleCategory = () => {
+                      const newSelectedTags = new Set(selectedTags)
+                      if (isCategoryFullySelected) {
+                        tags.forEach(tag => newSelectedTags.delete(tag))
+                      } else {
+                        tags.forEach(tag => newSelectedTags.add(tag))
+                      }
+                      setSelectedTags(newSelectedTags)
+                    }
+
+                    return (
+                      <div key={category} className={classes.filterCategory}>
+                        <label className={classes.filterCategoryHeader}>
+                          <input
+                            ref={(el) => {
+                              if (el) el.indeterminate = isCategoryPartiallySelected
+                            }}
+                            type="checkbox"
+                            checked={isCategoryFullySelected}
+                            onChange={toggleCategory}
+                          />
+                          <span className={classes.filterCategoryTitle}>{category}</span>
+                        </label>
+                        <div className={classes.filterCategoryItems}>
+                          {tags.map(tag => (
+                            <label key={tag} className={classes.filterMenuItem}>
+                              <input
+                                type="checkbox"
+                                checked={selectedTags.has(tag)}
+                                onChange={() => toggleTag(tag)}
+                              />
+                              {tag}
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                    )
+                  })}
                 </div>
                 <div className={classes.filterDialogFooter}>
                   <button className={classes.filterDialogBtn} onClick={() => setSelectedTags(new Set())}>Clear</button>
